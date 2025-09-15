@@ -47,9 +47,9 @@ public class ParcelService(
         return newParcel;
     }
 
-    public ParcelDto? GetParcelByBarcode(string barcode)
+    public async Task<ParcelDto?> GetParcelByBarcode(string barcode)
     {
-        ParcelDto? parcel = parcelsRepository.GetParcelByBarcode(barcode);
+        ParcelDto? parcel = await parcelsRepository.GetParcelByBarcode(barcode).ConfigureAwait(false);
 
         return parcel;
     }

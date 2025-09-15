@@ -3,6 +3,7 @@ using RM.Mars.ParcelTracking.Models.Requests;
 using System.Net;
 using System.Text.Json;
 using RM.Mars.ParcelTracking.Extensions;
+using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Response;
 using RM.Mars.ParcelTracking.Models.Validation;
 using RM.Mars.ParcelTracking.Services.Parcels;
@@ -51,11 +52,25 @@ namespace RM.Mars.ParcelTracking.Controllers
         [HttpGet("{barcode}")]
         public async Task<IActionResult> GetParcel(string barcode)
         {
-            return NoContent();
+            if (string.IsNullOrEmpty(barcode))
+            {
+                return BadRequest("Barcode is required.");
+            }
+
+            _logger.LogInformation("GetParcel triggered with barcode:{Barcode}.", barcode);
+
+            ParcelDto? parcel = await _parcelsService.GetParcelByBarcode(barcode).ConfigureAwait(false);
+
+            if (parcel == null)
+            {
+                return NotFound($"Parcel with barcode: '{barcode}' not found.");
+            }
+
+            return Ok(parcel);
         }
 
         [HttpPatch("{barcode}")]
-        public async Task<IActionResult> UpdateStatus(Guid id, [FromBody] UpdateParcelStatusRequest request)
+        public async Task<IActionResult> UpdateStatus(string barcode, [FromBody] UpdateParcelStatusRequest request)
         {
             return NoContent();
         }

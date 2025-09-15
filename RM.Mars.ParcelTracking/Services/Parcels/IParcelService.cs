@@ -8,6 +8,6 @@ namespace RM.Mars.ParcelTracking.Services.Parcels;
 public interface IParcelService
 {
     Task<ParcelCreatedResponse?> ProcessParcelRequest(CreateParcelRequest requestParcel);
-    ParcelDto? GetParcelByBarcode(string barcode);
+    Task<ParcelDto?> GetParcelByBarcode(string barcode);
     StatusValidation UpdateParcelStatus(string barcode, string newStatus);
 }

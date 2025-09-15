@@ -67,7 +67,7 @@ public class ParcelsRepository : IParcelsRepository
         await File.WriteAllTextAsync(_filePath, json);
     }
 
-    public ParcelDto? GetParcelByBarcode(string barcode)
+    public Task<ParcelDto?> GetParcelByBarcode(string barcode)
     {
         if (string.IsNullOrEmpty(barcode))
         {
@@ -76,7 +76,7 @@ public class ParcelsRepository : IParcelsRepository
 
         ParcelDto? parcel = GetParcels().Find(p => p.Barcode == barcode);
 
-        return parcel;
+        return Task.FromResult(parcel);
     }
 
     public Task UpdateParcelAsync(ParcelDto parcel)
