@@ -4,7 +4,7 @@ using RM.Mars.ParcelTracking.Models.AuditTrail;
 using RM.Mars.ParcelTracking.Services.AuditTrail;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
-namespace RM.Mars.ParcelTracking.Test.Services
+namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
     [TestFixture]
     public class AuditTrailServiceTests

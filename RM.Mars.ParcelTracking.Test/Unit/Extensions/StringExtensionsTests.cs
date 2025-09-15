@@ -2,7 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using RM.Mars.ParcelTracking.Extensions;
 
-namespace RM.Mars.ParcelTracking.Test.Extensions
+namespace RM.Mars.ParcelTracking.Test.Unit.Extensions
 {
     [TestFixture]
     public class StringExtensionsTests

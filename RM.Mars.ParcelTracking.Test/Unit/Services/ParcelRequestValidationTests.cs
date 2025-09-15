@@ -3,7 +3,7 @@ using RM.Mars.ParcelTracking.Enums;
 using RM.Mars.ParcelTracking.Models.Requests;
 using RM.Mars.ParcelTracking.Services.Validation;
 
-namespace RM.Mars.ParcelTracking.Test.Services
+namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
     [TestFixture]
     public class ParcelRequestValidationTests

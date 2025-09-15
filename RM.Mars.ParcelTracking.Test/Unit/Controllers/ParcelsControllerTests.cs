@@ -11,7 +11,7 @@ using RM.Mars.ParcelTracking.Services.Parcels;
 using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.Validation;
 
-namespace RM.Mars.ParcelTracking.Test.Controllers
+namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
 {
     [TestFixture]
     public class ParcelsControllerTests

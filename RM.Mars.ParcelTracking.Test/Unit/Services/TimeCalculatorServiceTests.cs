@@ -5,7 +5,7 @@ using RM.Mars.ParcelTracking.Enums;
 using RM.Mars.ParcelTracking.Services.TimeCalculator;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
-namespace RM.Mars.ParcelTracking.Test.Services
+namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
     [TestFixture]
     public class TimeCalculatorServiceTests

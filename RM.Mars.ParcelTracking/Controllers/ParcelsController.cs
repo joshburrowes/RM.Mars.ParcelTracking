@@ -13,7 +13,6 @@ namespace RM.Mars.ParcelTracking.Controllers
     [Route("[controller]")]
     public class ParcelsController : ControllerBase
     {
-
         private readonly IParcelService _parcelsService;
         private readonly ILogger<ParcelsController> _logger;
         private readonly IParcelRequestValidation _parcelRequestValidation;
@@ -27,7 +26,16 @@ namespace RM.Mars.ParcelTracking.Controllers
             _statusValidation = statusValidation;
         }
 
+        /// <summary>
+        /// Create a new parcel.
+        /// </summary>
+        /// <param name="request">Parcel creation request.</param>
+        /// <returns>Created parcel details.</returns>
+        /// <response code="201">Parcel created successfully.</response>
+        /// <response code="400">Validation failed or parcel already exists.</response>
         [HttpPost]
+        [ProducesResponseType(typeof(ParcelCreatedResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateParcel([FromBody] CreateParcelRequest request)
         {
             _logger.LogInformation("CreateParcel triggered.");
@@ -49,7 +57,18 @@ namespace RM.Mars.ParcelTracking.Controllers
             return CreatedAtAction(nameof(CreateParcel), new { id = parcel.Barcode }, parcel);
         }
 
+        /// <summary>
+        /// Get parcel details by barcode.
+        /// </summary>
+        /// <param name="barcode">Parcel barcode.</param>
+        /// <returns>Parcel details.</returns>
+        /// <response code="200">Parcel found.</response>
+        /// <response code="400">Barcode is required.</response>
+        /// <response code="404">Parcel not found.</response>
         [HttpGet("{barcode}")]
+        [ProducesResponseType(typeof(ParcelDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetParcel(string barcode)
         {
             if (string.IsNullOrEmpty(barcode))
@@ -69,7 +88,21 @@ namespace RM.Mars.ParcelTracking.Controllers
             return Ok(parcel);
         }
 
+        /// <summary>
+        /// Update the status of a parcel.
+        /// </summary>
+        /// <param name="barcode">Parcel barcode.</param>
+        /// <param name="request">Status update request.</param>
+        /// <returns>Status update result.</returns>
+        /// <response code="200">Status updated successfully.</response>
+        /// <response code="400">Invalid request or status transition.</response>
+        /// <response code="404">Parcel not found.</response>
+        /// <response code="500">Update failed due to server error.</response>
         [HttpPatch("{barcode}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateStatus(string barcode, [FromBody] UpdateParcelStatusRequest request)
         {
             if (string.IsNullOrEmpty(barcode))

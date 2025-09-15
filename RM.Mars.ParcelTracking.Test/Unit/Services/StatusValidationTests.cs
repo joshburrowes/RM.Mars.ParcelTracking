@@ -6,7 +6,7 @@ using RM.Mars.ParcelTracking.Models.Validation;
 using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
-namespace RM.Mars.ParcelTracking.Test.Services
+namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
     [TestFixture]
     public class StatusValidationTests
