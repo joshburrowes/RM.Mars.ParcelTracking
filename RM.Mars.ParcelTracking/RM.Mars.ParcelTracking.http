@@ -1,0 +1,6 @@
+@RM.Mars.ParcelTracking_HostAddress = https://localhost:7151
+
+GET {{RM.Mars.ParcelTracking_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
