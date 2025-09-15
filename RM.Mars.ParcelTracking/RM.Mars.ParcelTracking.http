@@ -1,6 +1,28 @@
 @RM.Mars.ParcelTracking_HostAddress = https://localhost:7151
 
-GET {{RM.Mars.ParcelTracking_HostAddress}}/weatherforecast/
-Accept: application/json
+POST {{RM.Mars.ParcelTracking_HostAddress}}/parcels
+Content-Type: application/json
+
+{
+  "barcode": "RMARS3234567890123456789M",
+  "sender": "Anders Hejlsberg",
+  "recipient": "Elon Musk",
+  "deliveryService": "Express",
+  "contents": "Signed C# language specification and a birthday card"
+}
+
+###
+
+@barcode=string
+GET {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{{barcode}}
+
+###
+
+PATCH {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{barcode}
+Content-Type: application/json
+
+{
+  //UpdateParcelStatusRequest
+}
 
 ###

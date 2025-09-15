@@ -26,7 +26,6 @@
 
             char checkSumChar = barcode[^1];
             return char.IsLetter(checkSumChar) && char.IsUpper(checkSumChar);
-
         }
     }
 }

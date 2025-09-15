@@ -1,3 +1,8 @@
-﻿namespace RM.Mars.ParcelTracking.Models.Requests;
+﻿using RM.Mars.ParcelTracking.Models.Parcel;
 
-public record CreateParcelRequest();
+namespace RM.Mars.ParcelTracking.Models.Requests;
+
+public record CreateParcelRequest : BaseParcel
+{
+    public string DeliveryService { get; set; } = string.Empty;
+}
