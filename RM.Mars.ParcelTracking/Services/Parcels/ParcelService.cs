@@ -2,7 +2,6 @@
 using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Requests;
 using RM.Mars.ParcelTracking.Models.Response;
-using RM.Mars.ParcelTracking.Models.Validation;
 using RM.Mars.ParcelTracking.Repositories.Parcels;
 using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.TimeCalculator;
@@ -10,15 +9,35 @@ using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Services.Parcels;
 
-public class ParcelService(
-    IParcelsRepository parcelsRepository,
-    ITimeCalculatorService timeCalculatorService,
-    IDateTimeProvider dateTimeProvider,
-    IStatusValidator statusValidator) : IParcelService
+/// <summary>
+/// Service for core parcel lifecycle handling and business logic.
+/// </summary>
+public class ParcelService : IParcelService
 {
-    public async Task<ParcelCreatedResponse?> ProcessParcelRequest(CreateParcelRequest requestParcel)
+    private readonly IParcelsRepository parcelsRepository;
+    private readonly ITimeCalculatorService timeCalculatorService;
+    private readonly IDateTimeProvider dateTimeProvider;
+    private readonly IStatusValidation statusValidation;
+    private readonly ILogger<ParcelService> logger;
+
+    public ParcelService(
+        IParcelsRepository parcelsRepository,
+        ITimeCalculatorService timeCalculatorService,
+        IDateTimeProvider dateTimeProvider,
+        IStatusValidation statusValidation,
+        ILogger<ParcelService> logger)
     {
-        ParcelDto? existingParcel = parcelsRepository.GetParcelByBarcode(requestParcel.Barcode);
+        this.parcelsRepository = parcelsRepository;
+        this.timeCalculatorService = timeCalculatorService;
+        this.dateTimeProvider = dateTimeProvider;
+        this.statusValidation = statusValidation;
+        this.logger = logger;
+    }
+
+    /// <inheritdoc/>
+    public async Task<ParcelCreatedResponse?> ProcessParcelRequestAsync(CreateParcelRequest requestParcel)
+    {
+        ParcelDto? existingParcel = await parcelsRepository.GetParcelByBarcodeAsync(requestParcel.Barcode).ConfigureAwait(false);
 
         if (existingParcel != null)
         {
@@ -47,34 +66,27 @@ public class ParcelService(
         return newParcel;
     }
 
-    public async Task<ParcelDto?> GetParcelByBarcode(string barcode)
+    /// <inheritdoc/>
+    public async Task<ParcelDto?> GetParcelByBarcodeAsync(string barcode)
     {
-        ParcelDto? parcel = await parcelsRepository.GetParcelByBarcode(barcode).ConfigureAwait(false);
+        ParcelDto? parcel = await parcelsRepository.GetParcelByBarcodeAsync(barcode).ConfigureAwait(false);
 
         return parcel;
     }
 
-    public StatusValidation UpdateParcelStatus(string barcode, string newStatus)
+    /// <inheritdoc/>
+    public async Task<bool> UpdateParcelStatus(ParcelDto parcel, string newStatus)
     {
-        ParcelDto? parcel = parcelsRepository.GetParcelByBarcode(barcode);
-
-        if (parcel == null)
+        try
         {
-            return new StatusValidation { Valid = false, Reason = $"Parcel with barcode: '{barcode}' not found." };
+            await parcelsRepository.UpdateParcelAsync(parcel, newStatus);
+        }
+        catch (Exception e)
+        {
+            logger.LogError("Exception whilst attempting to update status for parcel with barcode: {ParcelBarcode} - {Error}", parcel.Barcode, e);
+            return false;
         }
 
-        StatusValidation statusValidationResponse = statusValidator.ValidateStatus(parcel, newStatus);
-
-        if (!statusValidationResponse.Valid)
-        {
-            return statusValidationResponse;
-        }
-
-        parcel.Status = newStatus;
-        parcel.LastUpdated = dateTimeProvider.UtcNow;
-
-        parcelsRepository.UpdateParcelAsync(parcel);
-
-        return statusValidationResponse;
+        return true;
     }
 }

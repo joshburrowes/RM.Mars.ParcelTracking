@@ -13,16 +13,15 @@ Content-Type: application/json
 
 ###
 
-@barcode=string
+@barcode=RMARS3234567890123456789M
 GET {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{{barcode}}
 
 ###
 
-PATCH {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{barcode}
+@barcode=RMARS3234567890123456789M
+PATCH {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{{barcode}}
 Content-Type: application/json
-
 {
-  //UpdateParcelStatusRequest
+  "newStatus" : "OnRocketToMars"
 }
-
 ###

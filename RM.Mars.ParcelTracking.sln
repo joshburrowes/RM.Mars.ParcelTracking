@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36310.24 d17.14
+VisualStudioVersion = 17.14.36310.24
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Mars.ParcelTracking", "RM.Mars.ParcelTracking\RM.Mars.ParcelTracking.csproj", "{B745B8DD-B80D-4486-91E5-ACCD990CCF4F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RM.Mars.ParcelTracking.Test", "RM.Mars.ParcelTracking.Test\RM.Mars.ParcelTracking.Test.csproj", "{50473C7E-D445-48A7-A33A-E82CBB9C151C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{B745B8DD-B80D-4486-91E5-ACCD990CCF4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B745B8DD-B80D-4486-91E5-ACCD990CCF4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B745B8DD-B80D-4486-91E5-ACCD990CCF4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50473C7E-D445-48A7-A33A-E82CBB9C151C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50473C7E-D445-48A7-A33A-E82CBB9C151C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50473C7E-D445-48A7-A33A-E82CBB9C151C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50473C7E-D445-48A7-A33A-E82CBB9C151C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

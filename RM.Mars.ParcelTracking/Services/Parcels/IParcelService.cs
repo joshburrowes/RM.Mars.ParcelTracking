@@ -5,9 +5,21 @@ using RM.Mars.ParcelTracking.Models.Validation;
 
 namespace RM.Mars.ParcelTracking.Services.Parcels;
 
+/// <summary>
+/// Interface for parcel lifecycle handling and business logic.
+/// </summary>
 public interface IParcelService
 {
-    Task<ParcelCreatedResponse?> ProcessParcelRequest(CreateParcelRequest requestParcel);
-    Task<ParcelDto?> GetParcelByBarcode(string barcode);
-    StatusValidation UpdateParcelStatus(string barcode, string newStatus);
+    /// <summary>
+    /// Processes a parcel creation request.
+    /// </summary>
+    Task<ParcelCreatedResponse?> ProcessParcelRequestAsync(CreateParcelRequest requestParcel);
+    /// <summary>
+    /// Gets a parcel by its barcode.
+    /// </summary>
+    Task<ParcelDto?> GetParcelByBarcodeAsync(string barcode);
+    /// <summary>
+    /// Updates the status of a parcel.
+    /// </summary>
+    Task<bool> UpdateParcelStatus(ParcelDto parcel, string newStatus);
 }

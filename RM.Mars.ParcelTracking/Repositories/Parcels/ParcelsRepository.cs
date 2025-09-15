@@ -8,8 +8,7 @@ using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 namespace RM.Mars.ParcelTracking.Repositories.Parcels;
 
 /// <summary>
-/// Provides methods for managing parcels, including retrieving, adding, updating, and querying parcels stored in a
-/// JSON-based document database.
+/// Repository for parcel data access and persistence operations.
 /// </summary>
 /// <remarks>N.B.: This is a simple local document db for the purposes of the coding challenge. This repository interacts with a JSON file to persist parcel data. It supports operations such as
 /// retrieving all parcels, adding new parcels, updating existing parcels, and querying parcels by barcode. The
@@ -48,7 +47,6 @@ public class ParcelsRepository : IParcelsRepository
             Origin = parcelResponse.Origin,
             Contents = parcelResponse.Contents,
             EstimatedArrivalDate = parcelResponse.EstimatedArrivalDate,
-            EtaDays = parcelResponse.EtaDays,
             Destination = parcelResponse.Destination, 
             Recipient = parcelResponse.Recipient,
             LastUpdated = _dateTimeProvider.UtcNow,
@@ -67,7 +65,7 @@ public class ParcelsRepository : IParcelsRepository
         await File.WriteAllTextAsync(_filePath, json);
     }
 
-    public Task<ParcelDto?> GetParcelByBarcode(string barcode)
+    public Task<ParcelDto?> GetParcelByBarcodeAsync(string barcode)
     {
         if (string.IsNullOrEmpty(barcode))
         {
@@ -79,7 +77,7 @@ public class ParcelsRepository : IParcelsRepository
         return Task.FromResult(parcel);
     }
 
-    public Task UpdateParcelAsync(ParcelDto parcel)
+    public Task UpdateParcelAsync(ParcelDto parcel, string newStatus)
     {
         if (parcel == null)
         {
@@ -94,14 +92,13 @@ public class ParcelsRepository : IParcelsRepository
             throw new InvalidOperationException($"Parcel with barcode '{parcel.Barcode}' not found.");
         }
 
-        existing.Status = parcel.Status;
+        existing.Status = newStatus;
         existing.Destination = parcel.Destination;
         existing.Origin = parcel.Origin;
         existing.Sender = parcel.Sender;
         existing.Recipient = parcel.Recipient;
         existing.EstimatedArrivalDate = parcel.EstimatedArrivalDate;
         existing.LaunchDate = parcel.LaunchDate;
-        existing.EtaDays = parcel.EtaDays;
         existing.Contents = parcel.Contents;
         existing.LastUpdated = _dateTimeProvider.UtcNow;
         existing.History = _auditTrailService.UpdateStatusHistory(existing.History, parcel.Status);

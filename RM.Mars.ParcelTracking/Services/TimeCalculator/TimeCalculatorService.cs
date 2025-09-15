@@ -1,53 +1,56 @@
-﻿using RM.Mars.ParcelTracking.Enums;
+﻿using Microsoft.Extensions.Options;
+using RM.Mars.ParcelTracking.Enums;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Services.TimeCalculator;
 
 /// <summary>
-/// Provides methods for calculating launch dates, estimated time of arrival (ETA),  and estimated arrival dates for
-/// different delivery services.
+/// Service for calculating launch dates, ETA days, and estimated arrival dates for parcel delivery services.
+/// Reads the next standard launch date from configuration.
 /// </summary>
-/// <remarks>This service supports calculations for delivery services such as Standard and Express. The
-/// calculations are based on predefined rules for launch dates and ETAs.</remarks>
-/// <param name="timeProvider"></param>
-public class TimeCalculatorService(IDateTimeProvider timeProvider) : ITimeCalculatorService
+public class TimeCalculatorService : ITimeCalculatorService
 {
+    private readonly IDateTimeProvider _timeProvider;
+    private readonly DateTime _nextStandardLaunchDate;
+
+    public TimeCalculatorService(IDateTimeProvider timeProvider, IOptions<TimeCalculatorOptions> options)
+    {
+        _timeProvider = timeProvider;
+        string launchDateStr = options.Value.NextStandardLaunchDate;
+        _nextStandardLaunchDate = DateTime.Parse(launchDateStr);
+    }
+
+    /// <inheritdoc/>
     public DateTime GetLaunchDate(string deliveryService)
     {
-        DateTime currentUtcDate = timeProvider.UtcNow;
+        DateTime currentUtcDate = _timeProvider.UtcNow;
         if (deliveryService == DeliveryServiceEnum.Standard.ToString())
         {
-            DateTime nextStandardLaunch = new(year: 2025, month:10, day: 1);
-
+            DateTime nextStandardLaunch = _nextStandardLaunchDate;
             if (nextStandardLaunch < currentUtcDate)
             {
                 nextStandardLaunch = nextStandardLaunch.AddMonths(26);
             }
-
             return nextStandardLaunch;
         }
-
         if (deliveryService != DeliveryServiceEnum.Express.ToString())
         {
             throw new ArgumentException("Invalid delivery service");
         }
-
         DateTime firstDayOfMonth = new(currentUtcDate.Year, currentUtcDate.Month, 1);
         int daysOffset = ((int)DayOfWeek.Wednesday - (int)firstDayOfMonth.DayOfWeek + 7) % 7;
         DateTime firstWednesday = firstDayOfMonth.AddDays(daysOffset);
-
         if (firstWednesday >= currentUtcDate)
         {
             return firstWednesday;
         }
-
         firstDayOfMonth = firstDayOfMonth.AddMonths(1);
         daysOffset = ((int)DayOfWeek.Wednesday - (int)firstDayOfMonth.DayOfWeek + 7) % 7;
         firstWednesday = firstDayOfMonth.AddDays(daysOffset);
         return firstWednesday;
-
     }
 
+    /// <inheritdoc/>
     public int GetEtaDays(string deliveryService)
     {
         if(deliveryService == DeliveryServiceEnum.Standard.ToString())
@@ -61,5 +64,6 @@ public class TimeCalculatorService(IDateTimeProvider timeProvider) : ITimeCalcul
         throw new ArgumentException("Invalid delivery service");
     }
 
+    /// <inheritdoc/>
     public DateTime CalculateEstimatedArrivalDate(DateTime launchDate, int etaDays) => launchDate.AddDays(etaDays);
 }

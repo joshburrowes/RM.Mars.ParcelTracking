@@ -1,6 +1,6 @@
 ﻿namespace RM.Mars.ParcelTracking.Models.Validation;
 
-public record StatusValidation
+public record StatusValidationResponse
 {
     public bool Valid { get; set; }
 

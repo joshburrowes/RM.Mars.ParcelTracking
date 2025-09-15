@@ -9,11 +9,12 @@ using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<TimeCalculatorOptions>(builder.Configuration.GetSection("TimeCalculator"));
 builder.Services.AddSingleton<IParcelsRepository, ParcelsRepository>();
 builder.Services.AddSingleton<IDateTimeProvider, SystemDateTimeProvider>();
 builder.Services.AddTransient<IParcelService, ParcelService>();
 builder.Services.AddTransient<ITimeCalculatorService, TimeCalculatorService>();
-builder.Services.AddTransient<IStatusValidator, StatusValidator>();
+builder.Services.AddTransient<IStatusValidation, StatusValidation>();
 builder.Services.AddTransient<IAuditTrailService, AuditTrailService>();
 builder.Services.AddTransient<IParcelRequestValidation, ParcelRequestValidation>();
 builder.Services.AddControllers();

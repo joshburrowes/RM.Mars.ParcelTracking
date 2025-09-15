@@ -1,56 +1,57 @@
 {
   "Parcels": [
     {
-      "Status": "Created",
-      "Destination": "New London",
-      "Origin": "Starport Thames Estuary",
-      "EstimatedArrivalDate": "2025-12-02T00:00:00",
-      "LaunchDate": "2025-09-03T00:00:00",
-      "LastUpdated": "0001-01-01T00:00:00",
-      "EtaDays": 90,
-      "History": null,
       "Barcode": "RMARS1234567890123456789M",
+      "Status": "Created",
+      "LaunchDate": "2025-09-03T00:00:00",
+      "EstimatedArrivalDate": "2025-12-02T00:00:00",
+      "Origin": "Starport Thames Estuary",
+      "Destination": "New London",
       "Sender": "Anders Hejlsberg",
       "Recipient": "Elon Musk",
-      "Contents": "Signed C# language specification and a Christmas card"
+      "Contents": "Signed C# language specification and a Christmas card",
+      "History": null,
+      "LastUpdated": "0001-01-01T00:00:00"
     },
     {
-      "Status": "Created",
-      "Destination": "New London",
-      "Origin": "Starport Thames Estuary",
-      "EstimatedArrivalDate": "2025-12-30T00:00:00",
-      "LaunchDate": "2025-10-01T00:00:00",
-      "LastUpdated": "2025-09-15T21:14:47.398378Z",
-      "EtaDays": 90,
-      "History": [
-        {
-          "Status": "Created",
-          "TimeStamp": "2025-09-15"
-        }
-      ],
       "Barcode": "RMARS2234567890123456789M",
+      "Status": "Created",
+      "LaunchDate": "2025-10-01T00:00:00",
+      "EstimatedArrivalDate": "2025-12-30T00:00:00",
+      "Origin": "Starport Thames Estuary",
+      "Destination": "New London",
       "Sender": "Anders Hejlsberg",
       "Recipient": "Elon Musk",
-      "Contents": "Signed C# language specification and a birthday card"
-    },
-    {
-      "Status": "Created",
-      "Destination": "New London",
-      "Origin": "Starport Thames Estuary",
-      "EstimatedArrivalDate": "2025-12-30T00:00:00",
-      "LaunchDate": "2025-10-01T00:00:00",
-      "LastUpdated": "2025-09-15T21:18:21.3098052Z",
-      "EtaDays": 90,
+      "Contents": "Signed C# language specification and a birthday card",
       "History": [
         {
           "Status": "Created",
           "TimeStamp": "2025-09-15"
         }
       ],
+      "LastUpdated": "2025-09-15T21:14:47.398378Z"
+    },
+    {
       "Barcode": "RMARS3234567890123456789M",
+      "Status": "OnRocketToMars",
+      "LaunchDate": "2025-09-01T00:00:00",
+      "EstimatedArrivalDate": "2025-12-30T00:00:00",
+      "Origin": "Starport Thames Estuary",
+      "Destination": "New London",
       "Sender": "Anders Hejlsberg",
       "Recipient": "Elon Musk",
-      "Contents": "Signed C# language specification and a birthday card"
+      "Contents": "Signed C# language specification and a birthday card",
+      "History": [
+        {
+          "Status": "Created",
+          "TimeStamp": "2025-09-15"
+        },
+        {
+          "Status": "Created",
+          "TimeStamp": "2025-09-15"
+        }
+      ],
+      "LastUpdated": "2025-09-15T22:14:21.5913426Z"
     }
   ]
 }

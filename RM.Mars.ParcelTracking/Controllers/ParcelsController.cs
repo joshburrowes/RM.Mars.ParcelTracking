@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RM.Mars.ParcelTracking.Models.Requests;
-using System.Net;
-using System.Text.Json;
-using RM.Mars.ParcelTracking.Extensions;
 using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Response;
 using RM.Mars.ParcelTracking.Models.Validation;
 using RM.Mars.ParcelTracking.Services.Parcels;
+using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.Validation;
 
 namespace RM.Mars.ParcelTracking.Controllers
@@ -19,12 +17,14 @@ namespace RM.Mars.ParcelTracking.Controllers
         private readonly IParcelService _parcelsService;
         private readonly ILogger<ParcelsController> _logger;
         private readonly IParcelRequestValidation _parcelRequestValidation;
+        private readonly IStatusValidation _statusValidation;
 
-        public ParcelsController(IParcelService parcelsService, ILogger<ParcelsController> logger, IParcelRequestValidation parcelRequestValidation)
+        public ParcelsController(IParcelService parcelsService, ILogger<ParcelsController> logger, IParcelRequestValidation parcelRequestValidation, IStatusValidation statusValidation)
         {
             _parcelsService = parcelsService;
             _logger = logger;
             _parcelRequestValidation = parcelRequestValidation;
+            _statusValidation = statusValidation;
         }
 
         [HttpPost]
@@ -39,7 +39,7 @@ namespace RM.Mars.ParcelTracking.Controllers
                 return BadRequest(validationResponse.ErrorMessage);
             }
 
-            ParcelCreatedResponse? parcel = await _parcelsService.ProcessParcelRequest(request);
+            ParcelCreatedResponse? parcel = await _parcelsService.ProcessParcelRequestAsync(request).ConfigureAwait(false);
 
             if (parcel == null)
             {
@@ -59,7 +59,7 @@ namespace RM.Mars.ParcelTracking.Controllers
 
             _logger.LogInformation("GetParcel triggered with barcode:{Barcode}.", barcode);
 
-            ParcelDto? parcel = await _parcelsService.GetParcelByBarcode(barcode).ConfigureAwait(false);
+            ParcelDto? parcel = await _parcelsService.GetParcelByBarcodeAsync(barcode).ConfigureAwait(false);
 
             if (parcel == null)
             {
@@ -72,7 +72,40 @@ namespace RM.Mars.ParcelTracking.Controllers
         [HttpPatch("{barcode}")]
         public async Task<IActionResult> UpdateStatus(string barcode, [FromBody] UpdateParcelStatusRequest request)
         {
-            return NoContent();
+            if (string.IsNullOrEmpty(barcode))
+            {
+                return BadRequest("Barcode is required.");
+            }
+
+            if (request.GetType() != typeof(UpdateParcelStatusRequest))
+            {
+                return BadRequest("Invalid request body provided");
+            }
+
+            ParcelDto? parcel = await _parcelsService.GetParcelByBarcodeAsync(barcode).ConfigureAwait(false);
+            if (parcel == null)
+            {
+                return NotFound($"Parcel with barcode: '{barcode}' not found.");
+            }
+
+            if (string.IsNullOrEmpty(request.NewStatus))
+            {
+                return BadRequest("newStatus must have a value.");
+            }
+
+            StatusValidationResponse statusValidation = _statusValidation.ValidateStatus(parcel, request.NewStatus);
+
+            if (!statusValidation.Valid)
+            {
+                return BadRequest(statusValidation.Reason);
+            }
+
+            if (await _parcelsService.UpdateParcelStatus(parcel, request.NewStatus))
+            {
+                return Ok();
+            }
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Update Failed: An error occurred while updating the parcel status.");
         }
     }
 }

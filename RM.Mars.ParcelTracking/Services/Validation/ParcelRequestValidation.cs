@@ -6,8 +6,12 @@ using RM.Mars.ParcelTracking.Extensions;
 
 namespace RM.Mars.ParcelTracking.Services.Validation;
 
+/// <summary>
+/// Service for validating parcel creation requests and business rules.
+/// </summary>
 public class ParcelRequestValidation : IParcelRequestValidation
 {
+    /// <inheritdoc/>
     public ValidationResponse Validate(CreateParcelRequest request)
     {
         StringBuilder sb = CreateErrorMessageBuilder(request);

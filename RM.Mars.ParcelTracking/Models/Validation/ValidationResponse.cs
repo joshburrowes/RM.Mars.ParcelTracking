@@ -6,7 +6,7 @@ namespace RM.Mars.ParcelTracking.Models.Validation;
 public record ValidationResponse
 {
     public bool IsValid { get; set; }
-    public string ErrorMessage { get; set; }
+    public string? ErrorMessage { get; set; }
 
-    public CreateParcelRequest CreateParcelRequest { get; set; }
+    public CreateParcelRequest? CreateParcelRequest { get; set; }
 }
