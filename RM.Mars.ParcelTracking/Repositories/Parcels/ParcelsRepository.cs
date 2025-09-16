@@ -1,4 +1,6 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+using RM.Mars.ParcelTracking.Enums;
 using RM.Mars.ParcelTracking.Models;
 using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Response;
@@ -7,12 +9,6 @@ using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Repositories.Parcels;
 
-/// <summary>
-/// Repository for parcel data access and persistence operations.
-/// </summary>
-/// <remarks>N.B.: This is a simple local document db for the purposes of the coding challenge. This repository interacts with a JSON file to persist parcel data. It supports operations such as
-/// retrieving all parcels, adding new parcels, updating existing parcels, and querying parcels by barcode. The
-/// repository ensures that parcel data is serialized and deserialized in a structured format.</remarks>
 public class ParcelsRepository : IParcelsRepository
 {
     private readonly string _filePath;
@@ -42,12 +38,12 @@ public class ParcelsRepository : IParcelsRepository
         {
             Status = parcelResponse.Status,
             Barcode = parcelResponse.Barcode,
-            LaunchDate = parcelResponse.LaunchDate,
+            LaunchDate = parcelResponse.LaunchDate.Date,
             Sender = parcelResponse.Sender,
             Origin = parcelResponse.Origin,
             Contents = parcelResponse.Contents,
-            EstimatedArrivalDate = parcelResponse.EstimatedArrivalDate,
-            Destination = parcelResponse.Destination, 
+            EstimatedArrivalDate = parcelResponse.EstimatedArrivalDate.Date,
+            Destination = parcelResponse.Destination,
             Recipient = parcelResponse.Recipient,
             LastUpdated = _dateTimeProvider.UtcNow,
             History = _auditTrailService.UpdateStatusHistory(null, parcelResponse.Status)
@@ -55,13 +51,7 @@ public class ParcelsRepository : IParcelsRepository
 
         document.Parcels.Add(parcel);
 
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true
-        };
-
-        string json = JsonSerializer.Serialize(document, options);
-
+        string json = JsonSerializer.Serialize(document, CreateSerializerOptions());
         await File.WriteAllTextAsync(_filePath, json);
     }
 
@@ -77,19 +67,15 @@ public class ParcelsRepository : IParcelsRepository
         return Task.FromResult(parcel);
     }
 
-    public Task UpdateParcelAsync(ParcelDto parcel, string newStatus)
+    public Task UpdateParcelAsync(ParcelDto parcel, ParcelStatus newStatus)
     {
-        if (parcel == null)
-        {
-            throw new ArgumentNullException(nameof(parcel));
-        }
-
         DatabaseDocument document = GetDocument();
 
         ParcelDto? existing = document.Parcels.Find(p => p.Barcode == parcel.Barcode);
+
         if (existing == null)
         {
-            throw new InvalidOperationException($"Parcel with barcode '{parcel.Barcode}' not found.");
+            throw new FileNotFoundException($"Parcel with barcode: '{parcel.Barcode}' not found in database.");
         }
 
         existing.Status = newStatus;
@@ -97,18 +83,13 @@ public class ParcelsRepository : IParcelsRepository
         existing.Origin = parcel.Origin;
         existing.Sender = parcel.Sender;
         existing.Recipient = parcel.Recipient;
-        existing.EstimatedArrivalDate = parcel.EstimatedArrivalDate;
-        existing.LaunchDate = parcel.LaunchDate;
+        existing.EstimatedArrivalDate = parcel.EstimatedArrivalDate.Date;
+        existing.LaunchDate = parcel.LaunchDate.Date;
         existing.Contents = parcel.Contents;
         existing.LastUpdated = _dateTimeProvider.UtcNow;
-        existing.History = _auditTrailService.UpdateStatusHistory(existing.History, parcel.Status);
+        existing.History = _auditTrailService.UpdateStatusHistory(existing.History, newStatus);
 
-        JsonSerializerOptions options = new()
-        {
-            WriteIndented = true
-        };
-
-        string json = JsonSerializer.Serialize(document, options);
+        string json = JsonSerializer.Serialize(document, CreateSerializerOptions());
         return File.WriteAllTextAsync(_filePath, json);
     }
 
@@ -118,9 +99,13 @@ public class ParcelsRepository : IParcelsRepository
             return new DatabaseDocument();
 
         string json = File.ReadAllText(_filePath);
-        return JsonSerializer.Deserialize<DatabaseDocument>(json, new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        }) ?? new DatabaseDocument();
+        return JsonSerializer.Deserialize<DatabaseDocument>(json, CreateSerializerOptions()) ?? new DatabaseDocument();
     }
+
+    private static JsonSerializerOptions CreateSerializerOptions() => new()
+    {
+        WriteIndented = true,
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
 }

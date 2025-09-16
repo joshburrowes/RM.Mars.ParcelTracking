@@ -24,7 +24,7 @@ public class TimeCalculatorService : ITimeCalculatorService
     public DateTime GetLaunchDate(string deliveryService)
     {
         DateTime currentUtcDate = _timeProvider.UtcNow;
-        if (deliveryService == DeliveryServiceEnum.Standard.ToString())
+        if (deliveryService == nameof(DeliveryServiceEnum.Standard))
         {
             DateTime nextStandardLaunch = _nextStandardLaunchDate;
             if (nextStandardLaunch < currentUtcDate)
@@ -33,7 +33,7 @@ public class TimeCalculatorService : ITimeCalculatorService
             }
             return nextStandardLaunch;
         }
-        if (deliveryService != DeliveryServiceEnum.Express.ToString())
+        if (deliveryService != nameof(DeliveryServiceEnum.Express))
         {
             throw new ArgumentException("Invalid delivery service");
         }
@@ -53,15 +53,12 @@ public class TimeCalculatorService : ITimeCalculatorService
     /// <inheritdoc/>
     public int GetEtaDays(string deliveryService)
     {
-        if(deliveryService == DeliveryServiceEnum.Standard.ToString())
+        return deliveryService switch
         {
-            return 180;
-        }
-        if (deliveryService == DeliveryServiceEnum.Express.ToString())
-        {
-            return 90;
-        }
-        throw new ArgumentException("Invalid delivery service");
+            nameof(DeliveryServiceEnum.Standard) => 180,
+            nameof(DeliveryServiceEnum.Express) => 90,
+            _ => throw new ArgumentException("Invalid delivery service")
+        };
     }
 
     /// <inheritdoc/>

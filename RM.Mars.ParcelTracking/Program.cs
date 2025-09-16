@@ -5,6 +5,8 @@ using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.TimeCalculator;
 using RM.Mars.ParcelTracking.Services.Validation;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,12 @@ builder.Services.AddTransient<ITimeCalculatorService, TimeCalculatorService>();
 builder.Services.AddTransient<IStatusValidation, StatusValidation>();
 builder.Services.AddTransient<IAuditTrailService, AuditTrailService>();
 builder.Services.AddTransient<IParcelRequestValidation, ParcelRequestValidation>();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(o =>
+    {
+        o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -10,6 +10,7 @@ using RM.Mars.ParcelTracking.Models.Validation;
 using RM.Mars.ParcelTracking.Services.Parcels;
 using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.Validation;
+using RM.Mars.ParcelTracking.Enums;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
 {
@@ -58,7 +59,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
             // Arrange
             CreateParcelRequest request = new CreateParcelRequest { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", DeliveryService = "Express", Contents = "Book" };
             _requestValidation.Validate(request).Returns(new ValidationResponse { IsValid = true });
-            _parcelService.ProcessParcelRequestAsync(request).Returns(new ParcelCreatedResponse { Barcode = "RMARS1234567890123456789M" });
+            _parcelService.ProcessParcelRequestAsync(request).Returns(new ParcelCreatedResponse { Barcode = "RMARS1234567890123456789M", Status = ParcelStatus.Created });
 
             // Act
             IActionResult result = await _controller.CreateParcel(request);
@@ -94,7 +95,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task GetParcel_ReturnsOk_WhenParcelExists()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R" };
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", Status = ParcelStatus.Created };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns(parcel);
             // Act
             IActionResult result = await _controller.GetParcel("RMARS1234567890123456789M");
@@ -107,7 +108,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsBadRequest_WhenBarcodeEmpty()
         {
             // Arrange
-            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "InTransit" };
+            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = nameof(ParcelStatus.OnRocketToMars) };
             // Act
             IActionResult result = await _controller.UpdateStatus("", request);
             // Assert
@@ -119,7 +120,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsNotFound_WhenParcelMissing()
         {
             // Arrange
-            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "InTransit" };
+            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = nameof(ParcelStatus.OnRocketToMars) };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns((ParcelDto?)null);
             // Act
             IActionResult result = await _controller.UpdateStatus("RMARS1234567890123456789M", request);
@@ -131,7 +132,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsBadRequest_WhenNewStatusEmpty()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R" };
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", Status = ParcelStatus.Created };
             UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "" };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns(parcel);
             // Act
@@ -145,7 +146,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsBadRequest_WhenStatusValidationFails()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R" };
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", Status = ParcelStatus.Created };
             UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "InvalidStatus" };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns(parcel);
             _statusValidation.ValidateStatus(parcel, "InvalidStatus").Returns(new StatusValidationResponse { Valid = false, Reason = "Invalid" });
@@ -160,11 +161,11 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsOk_WhenUpdateSucceeds()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R" };
-            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "InTransit" };
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", Status = ParcelStatus.Created };
+            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = nameof(ParcelStatus.OnRocketToMars) };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns(parcel);
-            _statusValidation.ValidateStatus(parcel, "InTransit").Returns(new StatusValidationResponse { Valid = true });
-            _parcelService.UpdateParcelStatus(parcel, "InTransit").Returns(true);
+            _statusValidation.ValidateStatus(parcel, request.NewStatus).Returns(new StatusValidationResponse { Valid = true, NewParcelStatus = ParcelStatus.OnRocketToMars });
+            _parcelService.UpdateParcelStatus(parcel, ParcelStatus.OnRocketToMars).Returns(true);
             // Act
             IActionResult result = await _controller.UpdateStatus("RMARS1234567890123456789M", request);
             // Assert
@@ -175,11 +176,11 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
         public async Task UpdateStatus_ReturnsServerError_WhenUpdateFails()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R" };
-            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = "OnRocketToMars" };
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Sender = "S", Recipient = "R", Status = ParcelStatus.Created };
+            UpdateParcelStatusRequest request = new UpdateParcelStatusRequest { NewStatus = nameof(ParcelStatus.OnRocketToMars) };
             _parcelService.GetParcelByBarcodeAsync("RMARS1234567890123456789M").Returns(parcel);
-            _statusValidation.ValidateStatus(parcel, "OnRocketToMars").Returns(new StatusValidationResponse { Valid = true });
-            _parcelService.UpdateParcelStatus(parcel, "OnRocketToMars").Returns(false);
+            _statusValidation.ValidateStatus(parcel, request.NewStatus).Returns(new StatusValidationResponse { Valid = true, NewParcelStatus = ParcelStatus.OnRocketToMars });
+            _parcelService.UpdateParcelStatus(parcel, ParcelStatus.OnRocketToMars).Returns(false);
             // Act
             IActionResult result = await _controller.UpdateStatus("RMARS1234567890123456789M", request);
             // Assert

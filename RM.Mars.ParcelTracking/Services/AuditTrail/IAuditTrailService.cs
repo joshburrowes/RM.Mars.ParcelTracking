@@ -1,4 +1,5 @@
-﻿using RM.Mars.ParcelTracking.Models.AuditTrail;
+﻿using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Models.AuditTrail;
 
 namespace RM.Mars.ParcelTracking.Services.AuditTrail;
 
@@ -13,5 +14,5 @@ public interface IAuditTrailService
     /// <param name="statusHistory">Existing status history.</param>
     /// <param name="status">New status to add.</param>
     /// <returns>Updated status history list.</returns>
-    List<StatusAuditTrail> UpdateStatusHistory(List<StatusAuditTrail>? statusHistory, string status);
+    List<StatusAuditTrail> UpdateStatusHistory(List<StatusAuditTrail>? statusHistory, ParcelStatus status);
 }

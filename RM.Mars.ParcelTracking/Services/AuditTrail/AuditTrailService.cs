@@ -1,4 +1,5 @@
-﻿using RM.Mars.ParcelTracking.Models.AuditTrail;
+﻿using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Models.AuditTrail;
 using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Services.AuditTrail;
@@ -6,17 +7,10 @@ namespace RM.Mars.ParcelTracking.Services.AuditTrail;
 /// <summary>
 /// Service for updating and managing parcel history (audit trail).
 /// </summary>
-public class AuditTrailService : IAuditTrailService
+public class AuditTrailService(IDateTimeProvider dateTimeProvider) : IAuditTrailService
 {
-    private readonly IDateTimeProvider dateTimeProvider;
-
-    public AuditTrailService(IDateTimeProvider dateTimeProvider)
-    {
-        this.dateTimeProvider = dateTimeProvider;
-    }
-
     /// <inheritdoc/>
-    public List<StatusAuditTrail> UpdateStatusHistory(List<StatusAuditTrail>? statusHistory, string statusToAdd)
+    public List<StatusAuditTrail> UpdateStatusHistory(List<StatusAuditTrail>? statusHistory, ParcelStatus statusToAdd)
     {
 
         StatusAuditTrail auditTrailStatus = new()

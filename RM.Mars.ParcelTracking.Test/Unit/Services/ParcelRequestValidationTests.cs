@@ -20,7 +20,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public void Validate_ReturnsInvalid_WhenBarcodeIsEmpty()
         {
             // Arrange
-            CreateParcelRequest request = new CreateParcelRequest { Barcode = "", DeliveryService = DeliveryServiceEnum.Express.ToString() };
+            CreateParcelRequest request = new CreateParcelRequest { Barcode = "", DeliveryService = nameof(DeliveryServiceEnum.Express) };
 
             // Act
             var result = _service.Validate(request);
@@ -34,7 +34,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public void Validate_ReturnsInvalid_WhenBarcodeIsWrongFormat()
         {
             // Arrange
-            CreateParcelRequest request = new CreateParcelRequest { Barcode = "WRONGFORMAT", DeliveryService = DeliveryServiceEnum.Express.ToString() };
+            CreateParcelRequest request = new CreateParcelRequest { Barcode = "WRONGFORMAT", DeliveryService = nameof(DeliveryServiceEnum.Express) };
 
             // Act
             var result = _service.Validate(request);
@@ -62,7 +62,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public void Validate_ReturnsValid_WhenAllFieldsCorrect()
         {
             // Arrange
-            CreateParcelRequest request = new CreateParcelRequest { Barcode = "RMARS1234567890123456789M", DeliveryService = DeliveryServiceEnum.Express.ToString() };
+            CreateParcelRequest request = new CreateParcelRequest { Barcode = "RMARS1234567890123456789M", DeliveryService = nameof(DeliveryServiceEnum.Express) };
 
             // Act
             var result = _service.Validate(request);

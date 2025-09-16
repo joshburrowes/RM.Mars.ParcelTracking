@@ -1,4 +1,5 @@
-﻿using RM.Mars.ParcelTracking.Models.Parcel;
+﻿using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Response;
 
 namespace RM.Mars.ParcelTracking.Repositories.Parcels;
@@ -15,7 +16,7 @@ public interface IParcelsRepository
     /// <summary>
     /// Adds a new parcel.
     /// </summary>
-    Task AddParcelAsync(ParcelCreatedResponse parcel);
+    Task AddParcelAsync(ParcelCreatedResponse parcelResponse);
     /// <summary>
     /// Gets a parcel by its barcode.
     /// </summary>
@@ -23,5 +24,5 @@ public interface IParcelsRepository
     /// <summary>
     /// Updates the status of a parcel.
     /// </summary>
-    Task UpdateParcelAsync(ParcelDto parcel, string newStatus);
+    Task UpdateParcelAsync(ParcelDto parcel, ParcelStatus newStatus);
 }

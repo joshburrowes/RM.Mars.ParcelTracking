@@ -1,8 +1,10 @@
-﻿namespace RM.Mars.ParcelTracking.Models.AuditTrail;
+﻿using RM.Mars.ParcelTracking.Enums;
+
+namespace RM.Mars.ParcelTracking.Models.AuditTrail;
 
 public record StatusAuditTrail
 {
-    public string Status { get; set; } = string.Empty;
+    public ParcelStatus Status { get; set; }
 
     public string TimeStamp { get; set; } = string.Empty;
 }

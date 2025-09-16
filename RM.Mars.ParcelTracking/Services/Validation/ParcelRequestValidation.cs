@@ -40,11 +40,11 @@ public class ParcelRequestValidation : IParcelRequestValidation
             stringBuilder.AppendLine($"{nameof(request.Barcode)} is in an invalid format.{Environment.NewLine}");
         }
 
-        if (request.DeliveryService != DeliveryServiceEnum.Express.ToString() &&
-            request.DeliveryService != DeliveryServiceEnum.Standard.ToString())
+        if (request.DeliveryService != nameof(DeliveryServiceEnum.Express) &&
+            request.DeliveryService != nameof(DeliveryServiceEnum.Standard))
         {
             stringBuilder.AppendLine(
-                $"{nameof(request.DeliveryService)} must be either '{DeliveryServiceEnum.Express.ToString()}' or '{DeliveryServiceEnum.Standard.ToString()}'{Environment.NewLine}");
+                $"{nameof(request.DeliveryService)} must be either '{nameof(DeliveryServiceEnum.Express)}' or '{nameof(DeliveryServiceEnum.Standard)}'{Environment.NewLine}");
         }
 
         return stringBuilder;

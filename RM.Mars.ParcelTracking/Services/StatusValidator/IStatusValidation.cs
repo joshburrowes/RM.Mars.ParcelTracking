@@ -1,4 +1,5 @@
-﻿using RM.Mars.ParcelTracking.Models.Parcel;
+﻿using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Validation;
 
 namespace RM.Mars.ParcelTracking.Services.StatusValidator;

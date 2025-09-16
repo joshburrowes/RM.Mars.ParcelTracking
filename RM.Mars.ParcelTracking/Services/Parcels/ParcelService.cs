@@ -3,36 +3,19 @@ using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Requests;
 using RM.Mars.ParcelTracking.Models.Response;
 using RM.Mars.ParcelTracking.Repositories.Parcels;
-using RM.Mars.ParcelTracking.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Services.TimeCalculator;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Services.Parcels;
 
 /// <summary>
 /// Service for core parcel lifecycle handling and business logic.
 /// </summary>
-public class ParcelService : IParcelService
+public class ParcelService(
+    IParcelsRepository parcelsRepository,
+    ITimeCalculatorService timeCalculatorService,
+    ILogger<ParcelService> logger)
+    : IParcelService
 {
-    private readonly IParcelsRepository parcelsRepository;
-    private readonly ITimeCalculatorService timeCalculatorService;
-    private readonly IDateTimeProvider dateTimeProvider;
-    private readonly IStatusValidation statusValidation;
-    private readonly ILogger<ParcelService> logger;
-
-    public ParcelService(
-        IParcelsRepository parcelsRepository,
-        ITimeCalculatorService timeCalculatorService,
-        IDateTimeProvider dateTimeProvider,
-        IStatusValidation statusValidation,
-        ILogger<ParcelService> logger)
-    {
-        this.parcelsRepository = parcelsRepository;
-        this.timeCalculatorService = timeCalculatorService;
-        this.dateTimeProvider = dateTimeProvider;
-        this.statusValidation = statusValidation;
-        this.logger = logger;
-    }
 
     /// <inheritdoc/>
     public async Task<ParcelCreatedResponse?> ProcessParcelRequestAsync(CreateParcelRequest requestParcel)
@@ -44,9 +27,9 @@ public class ParcelService : IParcelService
             return null;
         }
 
-        DateTime launchDate = timeCalculatorService.GetLaunchDate(requestParcel.DeliveryService);
+        DateTime launchDate = timeCalculatorService.GetLaunchDate(requestParcel.DeliveryService).Date;
         int etaDays = timeCalculatorService.GetEtaDays(requestParcel.DeliveryService);
-        DateTime estimatedArrivalDate = timeCalculatorService.CalculateEstimatedArrivalDate(launchDate, etaDays);
+        DateTime estimatedArrivalDate = timeCalculatorService.CalculateEstimatedArrivalDate(launchDate, etaDays).Date;
 
         ParcelCreatedResponse newParcel = new()
         {
@@ -54,7 +37,7 @@ public class ParcelService : IParcelService
             Sender = requestParcel.Sender,
             Recipient = requestParcel.Recipient,
             Contents = requestParcel.Contents,
-            Status = ParcelStatus.Created.ToString(),
+            Status = ParcelStatus.Created,
             Origin = "Starport Thames Estuary",
             Destination = "New London",
             LaunchDate = launchDate,
@@ -75,15 +58,18 @@ public class ParcelService : IParcelService
     }
 
     /// <inheritdoc/>
-    public async Task<bool> UpdateParcelStatus(ParcelDto parcel, string newStatus)
+    public async Task<bool> UpdateParcelStatus(ParcelDto parcel, ParcelStatus newStatus)
     {
         try
         {
+            // Ensure date-only persists if consumer mutated times
+            parcel.LaunchDate = parcel.LaunchDate.Date;
+            parcel.EstimatedArrivalDate = parcel.EstimatedArrivalDate.Date;
             await parcelsRepository.UpdateParcelAsync(parcel, newStatus);
         }
         catch (Exception e)
         {
-            logger.LogError("Exception whilst attempting to update status for parcel with barcode: {ParcelBarcode} - {Error}", parcel.Barcode, e);
+            logger.LogError(e, "Exception whilst attempting to update status for parcel with barcode: {ParcelBarcode}", parcel.Barcode);
             return false;
         }
 

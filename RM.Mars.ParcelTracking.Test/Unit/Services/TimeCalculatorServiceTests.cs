@@ -30,7 +30,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
             _dateTimeProvider.UtcNow.Returns(new DateTime(2025, 9, 1));
 
             // Act
-            DateTime launchDate = _service.GetLaunchDate(DeliveryServiceEnum.Standard.ToString());
+            DateTime launchDate = _service.GetLaunchDate(nameof(DeliveryServiceEnum.Standard));
 
             // Assert
             launchDate.Should().Be(new DateTime(2025, 10, 1));
@@ -43,7 +43,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
             _dateTimeProvider.UtcNow.Returns(new DateTime(2026, 1, 1));
 
             // Act
-            DateTime launchDate = _service.GetLaunchDate(DeliveryServiceEnum.Standard.ToString());
+            DateTime launchDate = _service.GetLaunchDate(nameof(DeliveryServiceEnum.Standard));
 
             // Assert
             launchDate.Month.Should().Be(12); // 26 months after Oct 2025 is Dec 2027
@@ -57,7 +57,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
             _dateTimeProvider.UtcNow.Returns(new DateTime(2025, 10, 1)); // Wednesday
 
             // Act
-            DateTime launchDate = _service.GetLaunchDate(DeliveryServiceEnum.Express.ToString());
+            DateTime launchDate = _service.GetLaunchDate(nameof(DeliveryServiceEnum.Express));
 
             // Assert
             launchDate.Should().Be(new DateTime(2025, 10, 1));
@@ -80,7 +80,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public void GetEtaDays_Returns180_ForStandard()
         {
             // Act
-            int eta = _service.GetEtaDays(DeliveryServiceEnum.Standard.ToString());
+            int eta = _service.GetEtaDays(nameof(DeliveryServiceEnum.Standard));
             // Assert
             eta.Should().Be(180);
         }
@@ -89,7 +89,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public void GetEtaDays_Returns90_ForExpress()
         {
             // Act
-            int eta = _service.GetEtaDays(DeliveryServiceEnum.Express.ToString());
+            int eta = _service.GetEtaDays(nameof(DeliveryServiceEnum.Express));
             // Assert
             eta.Should().Be(90);
         }

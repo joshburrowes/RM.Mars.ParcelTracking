@@ -1,7 +1,7 @@
-﻿using RM.Mars.ParcelTracking.Models.Parcel;
+﻿using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Models.Parcel;
 using RM.Mars.ParcelTracking.Models.Requests;
 using RM.Mars.ParcelTracking.Models.Response;
-using RM.Mars.ParcelTracking.Models.Validation;
 
 namespace RM.Mars.ParcelTracking.Services.Parcels;
 
@@ -21,5 +21,5 @@ public interface IParcelService
     /// <summary>
     /// Updates the status of a parcel.
     /// </summary>
-    Task<bool> UpdateParcelStatus(ParcelDto parcel, string newStatus);
+    Task<bool> UpdateParcelStatus(ParcelDto parcel, ParcelStatus newStatus);
 }

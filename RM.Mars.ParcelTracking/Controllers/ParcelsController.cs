@@ -109,12 +109,7 @@ namespace RM.Mars.ParcelTracking.Controllers
             {
                 return BadRequest("Barcode is required.");
             }
-
-            if (request.GetType() != typeof(UpdateParcelStatusRequest))
-            {
-                return BadRequest("Invalid request body provided");
-            }
-
+            
             ParcelDto? parcel = await _parcelsService.GetParcelByBarcodeAsync(barcode).ConfigureAwait(false);
             if (parcel == null)
             {
@@ -133,7 +128,7 @@ namespace RM.Mars.ParcelTracking.Controllers
                 return BadRequest(statusValidation.Reason);
             }
 
-            if (await _parcelsService.UpdateParcelStatus(parcel, request.NewStatus))
+            if (await _parcelsService.UpdateParcelStatus(parcel, statusValidation.NewParcelStatus))
             {
                 return Ok();
             }

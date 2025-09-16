@@ -8,7 +8,7 @@ using RM.Mars.ParcelTracking.Repositories.Parcels;
 using RM.Mars.ParcelTracking.Services.Parcels;
 using RM.Mars.ParcelTracking.Services.TimeCalculator;
 using RM.Mars.ParcelTracking.Services.StatusValidator;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Enums;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
@@ -17,7 +17,6 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
     {
         private IParcelsRepository _repo;
         private ITimeCalculatorService _timeCalculatorService;
-        private IDateTimeProvider _dateTimeProvider;
         private IStatusValidation _statusValidation;
         private ILogger<ParcelService> _logger;
         private ParcelService _service;
@@ -27,10 +26,9 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         {
             _repo = Substitute.For<IParcelsRepository>();
             _timeCalculatorService = Substitute.For<ITimeCalculatorService>();
-            _dateTimeProvider = Substitute.For<IDateTimeProvider>();
             _statusValidation = Substitute.For<IStatusValidation>();
             _logger = Substitute.For<ILogger<ParcelService>>();
-            _service = new ParcelService(_repo, _timeCalculatorService, _dateTimeProvider, _statusValidation, _logger);
+            _service = new ParcelService(_repo, _timeCalculatorService, _logger);
         }
 
         [Test]
@@ -73,7 +71,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
             result.Sender.Should().Be(request.Sender);
             result.Recipient.Should().Be(request.Recipient);
             result.Contents.Should().Be(request.Contents);
-            result.Status.Should().Be("Created");
+            result.Status.Should().Be(ParcelStatus.Created);
             result.LaunchDate.Should().Be(DateTime.UtcNow.Date);
             result.EtaDays.Should().Be(10);
             result.EstimatedArrivalDate.Should().Be(DateTime.UtcNow.Date.AddDays(10));
@@ -112,8 +110,8 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public async Task UpdateParcelStatus_ReturnsTrue_WhenUpdateSucceeds()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = "Created" };
-            string newStatus = "InTransit";
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = ParcelStatus.Created };
+            ParcelStatus newStatus = ParcelStatus.OnRocketToMars;
             _repo.UpdateParcelAsync(parcel, newStatus).Returns(Task.CompletedTask);
 
             // Act
@@ -127,8 +125,8 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public async Task UpdateParcelStatus_ReturnsFalse_WhenUpdateThrows()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = "Created" };
-            string newStatus = "InTransit";
+            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = ParcelStatus.Created };
+            ParcelStatus newStatus = ParcelStatus.OnRocketToMars;
             _repo.UpdateParcelAsync(parcel, newStatus).Returns(x => { throw new Exception("fail"); });
 
             // Act
