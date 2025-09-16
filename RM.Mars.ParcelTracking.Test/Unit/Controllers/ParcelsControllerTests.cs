@@ -2,15 +2,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using FluentAssertions;
-using RM.Mars.ParcelTracking.Controllers;
-using RM.Mars.ParcelTracking.Models.Parcel;
-using RM.Mars.ParcelTracking.Models.Requests;
-using RM.Mars.ParcelTracking.Models.Response;
-using RM.Mars.ParcelTracking.Models.Validation;
-using RM.Mars.ParcelTracking.Services.Parcels;
-using RM.Mars.ParcelTracking.Services.StatusValidator;
-using RM.Mars.ParcelTracking.Services.Validation;
-using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Api.Controllers;
+using RM.Mars.ParcelTracking.Application.Services.Parcels;
+using RM.Mars.ParcelTracking.Application.Services.StatusValidator;
+using RM.Mars.ParcelTracking.Application.Services.Validation;
+using RM.Mars.ParcelTracking.Application.Enums;
+using RM.Mars.ParcelTracking.Api.Models.Requests;
+using RM.Mars.ParcelTracking.Api.Models.Response;
+using RM.Mars.ParcelTracking.Application.Models.Parcel;
+using RM.Mars.ParcelTracking.Application.Models.Validation;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Controllers
 {

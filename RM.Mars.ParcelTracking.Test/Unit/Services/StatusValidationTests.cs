@@ -1,10 +1,10 @@
 using FluentAssertions;
 using NSubstitute;
-using RM.Mars.ParcelTracking.Enums;
-using RM.Mars.ParcelTracking.Models.Parcel;
-using RM.Mars.ParcelTracking.Models.Validation;
-using RM.Mars.ParcelTracking.Services.StatusValidator;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Application.Enums;
+using RM.Mars.ParcelTracking.Application.Models.Parcel;
+using RM.Mars.ParcelTracking.Application.Models.Validation;
+using RM.Mars.ParcelTracking.Application.Services.StatusValidator;
+using RM.Mars.ParcelTracking.Common.Utils.DateTimeProvider;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
@@ -49,7 +49,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
             StatusValidationResponse result = _service.ValidateStatus(parcel, nameof(ParcelStatus.OnRocketToMars));
 
             // Assert
-            string expected = $"Invalid status transition: Cannot update parcel status from: '{ParcelStatus.Created}' to: '{ParcelStatus.OnRocketToMars}' as Launch Date: '{futureLaunch}' is in the future.";
+            string expected = $"Invalid status transition: Cannot update parcel status from: '{ParcelStatus.Created}' as Launch Date: '{futureLaunch}' is in the future.";
             result.Valid.Should().BeFalse();
             result.Reason.Should().Be(expected);
         }

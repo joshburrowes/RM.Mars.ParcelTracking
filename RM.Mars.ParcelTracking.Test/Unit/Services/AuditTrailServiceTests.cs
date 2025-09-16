@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NSubstitute;
-using RM.Mars.ParcelTracking.Models.AuditTrail;
-using RM.Mars.ParcelTracking.Services.AuditTrail;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
-using RM.Mars.ParcelTracking.Enums;
+using RM.Mars.ParcelTracking.Application.Services.AuditTrail;
+using RM.Mars.ParcelTracking.Common.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Application.Enums;
+using RM.Mars.ParcelTracking.Application.Models.AuditTrail;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {

@@ -1,10 +1,10 @@
-using RM.Mars.ParcelTracking.Repositories.Parcels;
-using RM.Mars.ParcelTracking.Services.AuditTrail;
-using RM.Mars.ParcelTracking.Services.Parcels;
-using RM.Mars.ParcelTracking.Services.StatusValidator;
-using RM.Mars.ParcelTracking.Services.TimeCalculator;
-using RM.Mars.ParcelTracking.Services.Validation;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Application.Services.AuditTrail;
+using RM.Mars.ParcelTracking.Application.Services.Parcels;
+using RM.Mars.ParcelTracking.Application.Services.StatusValidator;
+using RM.Mars.ParcelTracking.Application.Services.TimeCalculator;
+using RM.Mars.ParcelTracking.Application.Services.Validation;
+using RM.Mars.ParcelTracking.Common.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Infrastructure.Repositories.Parcels;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

@@ -1,7 +1,7 @@
 using FluentAssertions;
-using RM.Mars.ParcelTracking.Enums;
-using RM.Mars.ParcelTracking.Models.Requests;
-using RM.Mars.ParcelTracking.Services.Validation;
+using RM.Mars.ParcelTracking.Api.Models.Requests;
+using RM.Mars.ParcelTracking.Application.Enums;
+using RM.Mars.ParcelTracking.Application.Services.Validation;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {

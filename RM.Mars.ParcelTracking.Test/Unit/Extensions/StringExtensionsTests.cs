@@ -1,6 +1,5 @@
 using FluentAssertions;
-using NUnit.Framework;
-using RM.Mars.ParcelTracking.Extensions;
+using RM.Mars.ParcelTracking.Common.Extensions;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Extensions
 {

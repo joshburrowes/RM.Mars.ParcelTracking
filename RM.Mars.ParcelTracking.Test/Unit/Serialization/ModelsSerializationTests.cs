@@ -1,15 +1,12 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
-using NUnit.Framework;
-using RM.Mars.ParcelTracking.Enums;
-using RM.Mars.ParcelTracking.Models.AuditTrail;
-using RM.Mars.ParcelTracking.Models.Requests;
-using RM.Mars.ParcelTracking.Models.Validation;
-using RM.Mars.ParcelTracking.Models.Response;
-using RM.Mars.ParcelTracking.Models.Parcel;
-using RM.Mars.ParcelTracking.Utils.Json;
-using System.Collections.Generic;
+using RM.Mars.ParcelTracking.Application.Enums;
+using RM.Mars.ParcelTracking.Api.Models.Requests;
+using RM.Mars.ParcelTracking.Api.Models.Response;
+using RM.Mars.ParcelTracking.Application.Models.AuditTrail;
+using RM.Mars.ParcelTracking.Application.Models.Validation;
+using RM.Mars.ParcelTracking.Common.Utils.Json;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Serialization;
 

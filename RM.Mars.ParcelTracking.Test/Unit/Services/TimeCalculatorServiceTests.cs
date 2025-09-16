@@ -1,9 +1,9 @@
 using FluentAssertions;
 using NSubstitute;
 using Microsoft.Extensions.Options;
-using RM.Mars.ParcelTracking.Enums;
-using RM.Mars.ParcelTracking.Services.TimeCalculator;
-using RM.Mars.ParcelTracking.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Application.Services.TimeCalculator;
+using RM.Mars.ParcelTracking.Common.Utils.DateTimeProvider;
+using RM.Mars.ParcelTracking.Application.Enums;
 
 namespace RM.Mars.ParcelTracking.Test.Unit.Services
 {
