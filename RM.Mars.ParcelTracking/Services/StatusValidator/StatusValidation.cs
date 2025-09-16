@@ -28,31 +28,54 @@ public class StatusValidation(IDateTimeProvider dateTimeProvider) : IStatusValid
         switch (currentStatus)
         {
             case ParcelStatus.Created:
+            {
                 if (newParcelStatus == ParcelStatus.OnRocketToMars && parcel.LaunchDate <= dateTimeProvider.UtcNow)
+                {
                     return Result(true);
-                if (parcel.LaunchDate > dateTimeProvider.UtcNow)
-                    return Result(false, $"Invalid status transition: Cannot update parcel status from: '{currentStatus}' to: '{newParcelStatus}' as Launch Date: '{parcel.LaunchDate}' is in the future.");
-                return Result(false, $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+                }
+
+                return Result(false,
+                    parcel.LaunchDate > dateTimeProvider.UtcNow
+                        ? $"Invalid status transition: Cannot update parcel status from: '{currentStatus}' to: '{newParcelStatus}' as Launch Date: '{parcel.LaunchDate}' is in the future."
+                        : $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+            }
             case ParcelStatus.OnRocketToMars:
-                if (newParcelStatus == ParcelStatus.LandedOnMars && parcel.EstimatedArrivalDate <= dateTimeProvider.UtcNow)
+            {
+                if (newParcelStatus == ParcelStatus.LandedOnMars &&
+                    parcel.EstimatedArrivalDate <= dateTimeProvider.UtcNow || newParcelStatus == ParcelStatus.Lost)
+                {
                     return Result(true);
-                if (parcel.EstimatedArrivalDate > dateTimeProvider.UtcNow)
-                    return Result(false, "Invalid status transition: Estimated arrival date is in the future, parcel hasn't landed yet.");
-                return Result(false, $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+                }
+
+                return Result(false,
+                    parcel.EstimatedArrivalDate > dateTimeProvider.UtcNow
+                        ? "Invalid status transition: Estimated arrival date is in the future, parcel hasn't landed yet."
+                        : $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+            }
             case ParcelStatus.LandedOnMars:
+            {
                 return newParcelStatus == ParcelStatus.OutForMartianDelivery
                     ? Result(true)
                     : Result(false, $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+            }
             case ParcelStatus.OutForMartianDelivery:
+            {
                 return newParcelStatus is ParcelStatus.Delivered or ParcelStatus.Lost
                     ? Result(true)
                     : Result(false, $"Invalid status transition: Parcels cannot move from: '{currentStatus}' to: '{newParcelStatus}'");
+            }
             case ParcelStatus.Lost:
+            {
                 return Result(false, "Invalid status transition: parcel is lost.");
+            }
             case ParcelStatus.Delivered:
+            {
                 return Result(false, "Invalid status transition: parcel is already delivered.");
+            }
             default:
+            {
                 return Result(false, "Invalid status transition: unable to validate status.");
+            }
         }
     }
 }

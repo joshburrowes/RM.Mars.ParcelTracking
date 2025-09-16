@@ -87,6 +87,21 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         }
 
         [Test]
+        public void ValidateStatus_OnRocketToMarsToLost_Valid()
+        {
+            // Arrange
+            DateTime now = new DateTime(2030, 2, 1, 0, 0, 0, DateTimeKind.Utc);
+            _dateTimeProvider.UtcNow.Returns(now);
+            ParcelDto parcel = new ParcelDto { Status = ParcelStatus.OnRocketToMars, EstimatedArrivalDate = now.AddDays(-1) };
+
+            // Act
+            StatusValidationResponse result = _service.ValidateStatus(parcel, nameof(ParcelStatus.Lost));
+
+            // Assert
+            result.Valid.Should().BeTrue();
+        }
+
+        [Test]
         public void ValidateStatus_OnRocketToMarsToLandedOnMars_InvalidIfArrivalFuture()
         {
             // Arrange
