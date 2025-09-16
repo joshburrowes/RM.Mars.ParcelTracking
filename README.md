@@ -26,14 +26,14 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
 ## Project Layout
 ```
 RM.Mars.ParcelTracking.sln
-├── RM.Mars.ParcelTracking/            # Web API project
-│   ├── Controllers/
-│   ├── Services/
-│   ├── Repositories/
-│   ├── Models/
-│   ├── Utils/                         # Date provider & JSON converters
-│   └── Database/DocumentDb.json       # Local persistence file
-└── RM.Mars.ParcelTracking.Test/       # Unit & integration tests
+├── RM.Mars.ParcelTracking/                 # Single project with layered folders
+│   ├── Api/                                # HTTP layer: Controllers, request/response DTOs
+│   ├── Application/                        # Core application layer: services, domain models, enums
+│   ├── Infrastructure/                     # Persistence & repository implementations, database file
+│   ├── Common/                             # Cross-cutting concerns: utilities, extensions, JSON converters
+│   ├── Properties/launchSettings.json      # Launch profiles / ports
+│   └── Database/DocumentDb.json            # (Referenced via Infrastructure) local document store
+└── RM.Mars.ParcelTracking.Test/            # Unit & integration tests
 ```
 
 ## Prerequisites
@@ -177,7 +177,7 @@ Includes:
 
 ## Design Choices & Trade-offs
 
-- **Layered Architecture:** Controllers → Services → Repositories. Keeps responsibilities separate and business logic testable.
+- **Layered Architecture (folder-based single project):** `Api` (HTTP boundary) → `Application` (logic & domain) → `Infrastructure` (persistence) with cross-cutting `Common`. This keeps responsibilities separate while avoiding extra project boilerplate for MVP.
 - **File-backed Persistence:** Uses a JSON document store for simplicity and ease of local development. Not suitable for concurrency, scaling, or production durability.
 - **Abstractions for Testability:** `IDateTimeProvider` and `ITimeCalculatorService` allow time-based logic in tests.
 - **Minimal Validation:** Request validation is basic. A production system would use a more robust validation.
