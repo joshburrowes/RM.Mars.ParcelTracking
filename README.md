@@ -1,6 +1,6 @@
 ﻿# RM.Mars.ParcelTracking
 
-A .NET 8 microservice-style sample for tracking parcels destined for Mars. This solution demonstrates layered architecture, business logic separation, validation, audit trail handling, and a simple document-backed data store for experimentation and learning.
+A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solution demonstrates layered architecture, business logic separation, validation, audit trail handling, and a simple document-backed data store for experimentation and learning.
 
 ## Setup Instructions
 
@@ -17,7 +17,7 @@ A .NET 8 microservice-style sample for tracking parcels destined for Mars. This 
      ```sh
      dotnet run
      ```
-   - The app runs on HTTPS at `https://localhost:7151`. Swagger UI is available at [`/swagger`](https://localhost:7151/swagger).
+   - The app runs on HTTPS at `https://localhost:<port>`. Swagger UI is available at `https://localhost:<port>/swagger`.
 
 2. **Run Tests:**
    - From the solution or repository root:
@@ -35,7 +35,7 @@ A .NET 8 microservice-style sample for tracking parcels destined for Mars. This 
 - **Extensions:** Common extension methods.
 
 ### Key Flows
-- `POST /parcels` - create a parcel
+- `POST /parcels` - register a parcel
 - `GET /parcels/{barcode}` - retrieve parcel by barcode
 - `PATCH /parcels/{barcode}` - update parcel status
 - Swagger UI at `/swagger` for API exploration
@@ -97,5 +97,3 @@ This README and some developer-facing documentation were generated with assistan
 - Please confirm technical details against the codebase and runtime behavior.
 
 ---
-
-
