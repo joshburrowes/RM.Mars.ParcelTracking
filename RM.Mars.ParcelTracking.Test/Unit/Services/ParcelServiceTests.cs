@@ -2,7 +2,6 @@ using FluentAssertions;
 using NSubstitute;
 using Microsoft.Extensions.Logging;
 using RM.Mars.ParcelTracking.Application.Services.Parcels;
-using RM.Mars.ParcelTracking.Application.Services.StatusValidator;
 using RM.Mars.ParcelTracking.Application.Services.TimeCalculator;
 using RM.Mars.ParcelTracking.Infrastructure.Repositories.Parcels;
 using RM.Mars.ParcelTracking.Application.Enums;
@@ -15,77 +14,88 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
     [TestFixture]
     public class ParcelServiceTests
     {
-        private IParcelsRepository _repo;
-        private ITimeCalculatorService _timeCalculatorService;
-        private ILogger<ParcelService> _logger;
-        private ParcelService _service;
+        private IParcelsRepository _repo = null!;
+        private ITimeCalculatorService _timeCalculatorService = null!;
+        private ILogger<ParcelService> _logger = null!;
+        private ParcelService _service = null!;
+
+        private const string Barcode = "RMARS1234567890123456789M";
+        private static readonly DateTime LaunchDate = new(2030, 01, 15);
+        private const int EtaDays = 42;
+        private static readonly DateTime EstimatedArrivalDate = LaunchDate.AddDays(EtaDays);
 
         [SetUp]
         public void Setup()
         {
             _repo = Substitute.For<IParcelsRepository>();
             _timeCalculatorService = Substitute.For<ITimeCalculatorService>();
-            Substitute.For<IStatusValidation>();
             _logger = Substitute.For<ILogger<ParcelService>>();
             _service = new ParcelService(_repo, _timeCalculatorService, _logger);
         }
 
         [Test]
-        public async Task ProcessParcelRequestAsync_ReturnsNull_WhenParcelExists()
+        public async Task ProcessParcelRequestAsync_ReturnsNull_WhenParcelExists_DoesNotAdd()
         {
             // Arrange
-            CreateParcelRequest request = new CreateParcelRequest { Barcode = "RMARS1234567890123456789M" };
-            _repo.GetParcelByBarcodeAsync(request.Barcode).Returns(new ParcelDto { Barcode = request.Barcode });
+            CreateParcelRequest request = new() { Barcode = Barcode };
+            _repo.GetParcelByBarcodeAsync(Barcode).Returns(new ParcelDto { Barcode = Barcode });
 
             // Act
-            ParcelCreatedResponse result = await _service.ProcessParcelRequestAsync(request);
+            ParcelCreatedResponse? result = await _service.ProcessParcelRequestAsync(request);
 
             // Assert
             result.Should().BeNull();
+            await _repo.DidNotReceive().AddParcelAsync(Arg.Any<ParcelCreatedResponse>());
         }
 
         [Test]
-        public async Task ProcessParcelRequestAsync_CreatesParcel_WhenNotExists()
+        public async Task ProcessParcelRequestAsync_CreatesParcel_WhenNotExists_SetsExpectedValues()
         {
             // Arrange
-            CreateParcelRequest request = new CreateParcelRequest
+            CreateParcelRequest request = new()
             {
-                Barcode = "RMARS1234567890123456789M",
+                Barcode = Barcode,
                 Sender = "S",
                 Recipient = "R",
-                DeliveryService = "Express",
+                DeliveryService = nameof(DeliveryServiceEnum.Express),
                 Contents = "Book"
             };
-            _repo.GetParcelByBarcodeAsync(request.Barcode).Returns((ParcelDto)null);
-            _timeCalculatorService.GetLaunchDate(request.DeliveryService).Returns(DateTime.UtcNow.Date);
-            _timeCalculatorService.GetEtaDays(request.DeliveryService).Returns(10);
-            _timeCalculatorService.CalculateEstimatedArrivalDate(Arg.Any<DateTime>(), Arg.Any<int>()).Returns(DateTime.UtcNow.Date.AddDays(10));
+            _repo.GetParcelByBarcodeAsync(Barcode).Returns((ParcelDto?)null);
+            _timeCalculatorService.GetLaunchDate(request.DeliveryService).Returns(LaunchDate);
+            _timeCalculatorService.GetEtaDays(request.DeliveryService).Returns(EtaDays);
+            _timeCalculatorService.CalculateEstimatedArrivalDate(LaunchDate, EtaDays).Returns(EstimatedArrivalDate);
 
             // Act
-            ParcelCreatedResponse result = await _service.ProcessParcelRequestAsync(request);
+            ParcelCreatedResponse? result = await _service.ProcessParcelRequestAsync(request);
 
             // Assert
             result.Should().NotBeNull();
-            result.Barcode.Should().Be(request.Barcode);
-            result.Sender.Should().Be(request.Sender);
-            result.Recipient.Should().Be(request.Recipient);
-            result.Contents.Should().Be(request.Contents);
+            result!.Barcode.Should().Be(Barcode);
             result.Status.Should().Be(ParcelStatus.Created);
-            result.LaunchDate.Should().Be(DateTime.UtcNow.Date);
-            result.EtaDays.Should().Be(10);
-            result.EstimatedArrivalDate.Should().Be(DateTime.UtcNow.Date.AddDays(10));
+            result.LaunchDate.Should().Be(LaunchDate);
+            result.EtaDays.Should().Be(EtaDays);
+            result.EstimatedArrivalDate.Should().Be(EstimatedArrivalDate);
+            result.Sender.Should().Be("S");
+            result.Recipient.Should().Be("R");
+            result.Contents.Should().Be("Book");
+
+            await _repo.Received(1).AddParcelAsync(Arg.Is<ParcelCreatedResponse>(p =>
+                p.Barcode == Barcode &&
+                p.Status == ParcelStatus.Created &&
+                p.LaunchDate == LaunchDate &&
+                p.EtaDays == EtaDays &&
+                p.EstimatedArrivalDate == EstimatedArrivalDate));
         }
 
         [Test]
         public async Task GetParcelByBarcodeAsync_ReturnsParcel_WhenExists()
         {
             // Arrange
-            string barcode = "RMARS1234567890123456789M";
-            ParcelDto parcel = new ParcelDto { Barcode = barcode };
-            _repo.GetParcelByBarcodeAsync(barcode).Returns(parcel);
+            ParcelDto parcel = new() { Barcode = Barcode };
+            _repo.GetParcelByBarcodeAsync(Barcode).Returns(parcel);
 
             // Act
-            ParcelDto result = await _service.GetParcelByBarcodeAsync(barcode);
+            ParcelDto? result = await _service.GetParcelByBarcodeAsync(Barcode);
 
             // Assert
             result.Should().BeEquivalentTo(parcel);
@@ -95,11 +105,10 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public async Task GetParcelByBarcodeAsync_ReturnsNull_WhenNotExists()
         {
             // Arrange
-            string barcode = "RMARS1234567890123456789M";
-            _repo.GetParcelByBarcodeAsync(barcode).Returns((ParcelDto)null);
+            _repo.GetParcelByBarcodeAsync(Barcode).Returns((ParcelDto?)null);
 
             // Act
-            ParcelDto result = await _service.GetParcelByBarcodeAsync(barcode);
+            ParcelDto? result = await _service.GetParcelByBarcodeAsync(Barcode);
 
             // Assert
             result.Should().BeNull();
@@ -109,30 +118,30 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         public async Task UpdateParcelStatus_ReturnsTrue_WhenUpdateSucceeds()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = ParcelStatus.Created };
-            ParcelStatus newStatus = ParcelStatus.OnRocketToMars;
-            _repo.UpdateParcelAsync(parcel, newStatus).Returns(Task.CompletedTask);
+            ParcelDto parcel = new() { Barcode = Barcode, Status = ParcelStatus.Created };
+            _repo.UpdateParcelAsync(parcel, ParcelStatus.OnRocketToMars).Returns(Task.CompletedTask);
 
             // Act
-            bool result = await _service.UpdateParcelStatus(parcel, newStatus);
+            bool result = await _service.UpdateParcelStatus(parcel, ParcelStatus.OnRocketToMars);
 
             // Assert
             result.Should().BeTrue();
+            await _repo.Received(1).UpdateParcelAsync(parcel, ParcelStatus.OnRocketToMars);
         }
 
         [Test]
         public async Task UpdateParcelStatus_ReturnsFalse_WhenUpdateThrows()
         {
             // Arrange
-            ParcelDto parcel = new ParcelDto { Barcode = "RMARS1234567890123456789M", Status = ParcelStatus.Created };
-            ParcelStatus newStatus = ParcelStatus.OnRocketToMars;
-            _repo.UpdateParcelAsync(parcel, newStatus).Returns(x => { throw new Exception("fail"); });
+            ParcelDto parcel = new() { Barcode = Barcode, Status = ParcelStatus.Created };
+            _repo.UpdateParcelAsync(parcel, ParcelStatus.OnRocketToMars).Returns(_ => throw new Exception("fail"));
 
             // Act
-            bool result = await _service.UpdateParcelStatus(parcel, newStatus);
+            bool result = await _service.UpdateParcelStatus(parcel, ParcelStatus.OnRocketToMars);
 
             // Assert
             result.Should().BeFalse();
+            await _repo.Received(1).UpdateParcelAsync(parcel, ParcelStatus.OnRocketToMars);
         }
     }
 }
