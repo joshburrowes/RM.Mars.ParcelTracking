@@ -70,12 +70,11 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
    - Implement input sanitization, rate-limiting, and Azure Key Vault for secrets management.
 
 5. **Testing & CI/CD:**
-   - Add unit, integration, and contract tests.
-   - Use Azure DevOps pipelines for build, test, container image build, and deployment.
-   - Provide staging environments and automated canary/blue-green deployments in Azure.
+   - Add automation tests
+   - Use Azure DevOps CI/CD pipelines for automated build, test, and deployment.
 
 6. **API Design & Contracts:**
-   - Expand OpenAPI documentation, specify response codes, and add versioning for breaking changes.
+   - Add versioning for breaking changes.
 
 7. **Scaling Architecture:**
    - Containerize the service and deploy on Azure Kubernetes Service (AKS) with autoscaling and service discovery.
