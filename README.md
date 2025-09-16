@@ -136,7 +136,7 @@ A simple file-backed JSON document store simulates persistence.
 When running locally you can edit the json manually to simulate passage of time to allow status transitions.
 
 Reset the database by deleting or editing the JSON file while the API is stopped.
-
+**Note:** I have included one entry in the mock db with the barcode: RMARS1234567890123456789M to allow for quick testing.
 DocumentDb.json must be present and in the following format:
 
 ```json
