@@ -17,13 +17,15 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
      ```sh
      dotnet run
      ```
-   - The app runs on HTTPS at `https://localhost:<port>`. Swagger UI is available at `https://localhost:<port>/swagger`.
+   - Swagger UI is available at `https://localhost:<port>/swagger`.
 
 2. **Run Tests:**
    - From the solution or repository root:
      ```sh
      dotnet test
      ```
+
+   - There is a .http file with generated requests for POST, GET, and PATCH for easy and quick testing.
 
 ## Solution Walkthrough
 
@@ -45,8 +47,8 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
 - **Layered Architecture:** Controllers → Services → Repositories. Keeps responsibilities separate and business logic testable.
 - **File-backed Persistence:** Uses a JSON document store for simplicity and ease of local development. Not suitable for concurrency, scaling, or production durability.
 - **Abstractions for Testability:** `IDateTimeProvider` and `ITimeCalculatorService` allow deterministic time-based logic in tests.
-- **Minimal Validation:** Request validation is pragmatic and short. A production system would use a richer validation library and centralized model validation.
-- **No Authentication/Authorization:** Omitted for brevity. In production, add token-based auth, role checks, and tenant isolation.
+- **Minimal Validation:** Request validation is pragmatic and short. A production system would use a more robust validation.
+- **No Authentication/Authorization:** Omitted for brevity. In production, add token-based auth e.g. OAuth2.0
 - **Synchronous/Asynchronous Mix:** Some repository/service methods are synchronous for clarity. Real-world services should use async I/O throughout.
 
 ## What to Improve for Enterprise Scale
