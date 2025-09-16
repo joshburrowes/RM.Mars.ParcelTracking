@@ -58,15 +58,15 @@ dotnet run --launch-profile https --project RM.Mars.ParcelTracking/RM.Mars.Parce
 ```
 Typical console output will show two URLs, e.g.:
 ```
-Now listening on: https://localhost:5001
-Now listening on: http://localhost:5000
+Now listening on: https://localhost:7151
+Now listening on: http://localhost:5282
 ```
 Use the HTTPS URL where possible.
 
 ## Swagger / OpenAPI
 Swagger UI is enabled automatically in `Development`:
 ```
-https://localhost:5001/swagger
+https://localhost:7151/swagger
 ```
 If you don't see it, ensure `ASPNETCORE_ENVIRONMENT=Development` (default when running locally).
 
