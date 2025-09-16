@@ -17,7 +17,6 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
     {
         private IParcelsRepository _repo;
         private ITimeCalculatorService _timeCalculatorService;
-        private IStatusValidation _statusValidation;
         private ILogger<ParcelService> _logger;
         private ParcelService _service;
 
@@ -26,7 +25,7 @@ namespace RM.Mars.ParcelTracking.Test.Unit.Services
         {
             _repo = Substitute.For<IParcelsRepository>();
             _timeCalculatorService = Substitute.For<ITimeCalculatorService>();
-            _statusValidation = Substitute.For<IStatusValidation>();
+            Substitute.For<IStatusValidation>();
             _logger = Substitute.For<ILogger<ParcelService>>();
             _service = new ParcelService(_repo, _timeCalculatorService, _logger);
         }

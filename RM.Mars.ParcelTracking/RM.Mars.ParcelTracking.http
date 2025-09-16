@@ -1,6 +1,8 @@
-@RM.Mars.ParcelTracking_HostAddress = https://localhost:7151
+@host = https://localhost:7151
+@barcode = RMARS3234567890123456789M
 
-POST {{RM.Mars.ParcelTracking_HostAddress}}/parcels
+### Create parcel
+POST {{host}}/parcels
 Content-Type: application/json
 
 {
@@ -11,17 +13,13 @@ Content-Type: application/json
   "contents": "Signed C# language specification and a birthday card"
 }
 
-###
+### Get parcel
+GET {{host}}/parcels/{{barcode}}
 
-@barcode=RMARS3234567890123456789M
-GET {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{{barcode}}
-
-###
-
-@barcode=RMARS3234567890123456789M
-PATCH {{RM.Mars.ParcelTracking_HostAddress}}/parcels/{{barcode}}
+### Update parcel
+PATCH {{host}}/parcels/{{barcode}}
 Content-Type: application/json
+
 {
-  "newStatus" : "OnRocketToMars"
+  "newStatus": "OnRocketToMars"
 }
-###

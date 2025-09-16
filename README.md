@@ -20,7 +20,6 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
 ## Tech Stack
 - .NET 8 / C# 12
 - ASP.NET Core Web API
-- Newtonsoft NOT used – native `System.Text.Json` with custom converters (enum + date-only)
 - NUnit / FluentAssertions / NSubstitute
 - Simple JSON file as a document store
 
@@ -55,7 +54,7 @@ dotnet build --no-restore
 ## Run the API
 Run the web project explicitly (solution contains multiple projects):
 ```bash
-dotnet run --project RM.Mars.ParcelTracking/RM.Mars.ParcelTracking.csproj
+dotnet run --launch-profile https --project RM.Mars.ParcelTracking/RM.Mars.ParcelTracking.csproj
 ```
 Typical console output will show two URLs, e.g.:
 ```
@@ -63,11 +62,6 @@ Now listening on: https://localhost:5001
 Now listening on: http://localhost:5000
 ```
 Use the HTTPS URL where possible.
-
-### Hot Reload (optional)
-```bash
-dotnet watch --project RM.Mars.ParcelTracking/RM.Mars.ParcelTracking.csproj run
-```
 
 ## Swagger / OpenAPI
 Swagger UI is enabled automatically in `Development`:
@@ -77,13 +71,15 @@ https://localhost:5001/swagger
 If you don't see it, ensure `ASPNETCORE_ENVIRONMENT=Development` (default when running locally).
 
 ## Sample Requests
-All payloads use camelCase due to configured `JsonNamingPolicy.CamelCase`.
+See swagger for full details.
+You can use a tool like [Postman](https://www.postman.com/downloads/) to make requests.
 
 ### Create Parcel
 ```bash
-curl -X POST https://localhost:5001/Parcels \
-  -H "Content-Type: application/json" \
-  -d '{
+POST https://localhost:5001/Parcels
+  Headers: Content-Type: application/json
+  Body:
+  '{
     "barcode":"RMARS1234567890123456789M",
     "sender":"Anders Hejlsberg",
     "recipient":"Elon Musk",
@@ -109,14 +105,14 @@ Response (example):
 
 ### Get Parcel
 ```bash
-curl https://localhost:5001/Parcels/RMARS1234567890123456789M
+GET https://localhost:5001/Parcels/RMARS1234567890123456789M
 ```
 
 ### Update Status
 ```bash
-curl -X PATCH https://localhost:5001/Parcels/RMARS1234567890123456789M \
-  -H "Content-Type: application/json" \
-  -d '{"newStatus":"OnRocketToMars"}'
+PATCH https://localhost:5001/Parcels/RMARS1234567890123456789M
+  Headers: Content-Type: application/json"
+  Body: '{"newStatus":"OnRocketToMars"}'
 ```
 Allowed transitions are enforced (see below).
 
@@ -214,20 +210,29 @@ Includes:
    - Add versioning for breaking changes.
    - Add pagination, filtering, and sorting for list endpoints.
 
+7. **Solution Architecture:**
+   - Separate into API, Application, Domain, Infrastructure layers using separate projects in the solution for better separation of concerns. 
+
 ## Design Assumptions & Shortcuts
 
-- Single project for simplicity.
+- Single project for simplicity, reduces amount of boilerplate code.
 - File-based JSON doc "database", allows persistence between runs, easier to refactor for production using CosmosDB.
 - No authentication required.
 - Next launch data stored in appsettings config hard-coded, would need to be updated in reality would store in a db.
 - No pagination/filtering on GET all parcels endpoint.
 - No rate limiting.
 - No API versioning.
-- Added a lastUpdatedUtc field to the parcel model to help with concurrency if this were to be extended.
+- Added a lastUpdated field to the parcel model to help with concurrency if this were to be extended.
 
 ## AI Tool Usage
 
+### Tools Used:
+- GitHub Copilot (GPT-5, GPT-5 mini)
+- ChatGPT (free)
+
+### What they were used for:
 - GitHub Copilot was used for drafting documentation, including the README and the xml summaries on the classes.
-- GitHub Copilot was used for adding some more in-depth testing, including an end-to-end happy path test, and serialization tests.
+- GitHub Copilot was used for adding some more in-depth testing, including an end-to-end happy path test, and some serialization tests.
+- GitHub Copliot was used for extending unit tests of core services to cover more edge-cases
 - ChatGPT was used to breakdown the requirments into separate epics and stories (explicitly avoiding solutionising to avoid it providing any logic suggestions).
-- GitHub Copilot was used to generate a util for json serialization of DateTime properties.
+- GitHub Copilot was used to generate a util for json serialization of DateTime properties. 
