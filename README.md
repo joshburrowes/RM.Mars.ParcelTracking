@@ -87,14 +87,14 @@ A .NET 8 ASP.NET Core Web API for tracking parcels destined for Mars. This solut
 - Single project for simplicity.
 - File-based persistence to avoid external dependencies.
 - No authentication required.
-- Some validations and edge-case handling are simplified for readability and speed.
-- These shortcuts are for local exploration and demo purposes, not production.
+- Next launch data stored in appsettings config hard-coded, would need to be updated in reality would store in a db.
+
 
 ## AI Tool Usage
 
-This README and some developer-facing documentation were generated with assistance from an AI coding assistant: **GitHub Copilot**.
-- AI was used for drafting documentation and suggesting improvement areas.
-- Code in the repository was not modified by the assistant during README creation except for adding this file.
-- Please confirm technical details against the codebase and runtime behavior.
+- GitHub Copilot was used for drafting documentation, including the README and the xml summaries on the classes.
+- GitHub Copilot was used for adding some more in-depth testing, including an end-to-end happy path test, and serialization tests.
+- ChatGPT was used to breakdown the requirments into separate epics and stories (explicitly avoiding solutionising to avoid it providing any logic suggestions)
+- GitHub Copilot was used to generate a util for json serialization of DateTime properties.
 
 ---
